@@ -16,6 +16,7 @@
     "@ai-sdk/react": "^3.0.6",
     "@base-ui/react": "^1.0.0",
     "@phosphor-icons/react": "^2.1.10",
+    "@prisma/adapter-libsql": "^7.2.0",
     "@prisma/client": "^7.2.0",
     "@radix-ui/react-use-controllable-state": "^1.2.2",
     "@xyflow/react": "^12.10.0",

@@ -13,22 +13,19 @@ type Message = {
 
 export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [status, setStatus] = useState<'idle' | 'streaming' | 'error'>('idle');
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim() || isLoading) return;
+  const handleSubmit = async (message: { text: string; files: any[] }) => {
+    if (!message.text.trim()) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
       role: 'user',
-      content: input,
+      content: message.text,
     };
 
-    setMessages(prev => [...prev, userMessage]);
-    setInput("");
-    setIsLoading(true);
+    const currentMessages = [...messages, userMessage];
+    setMessages(currentMessages);
 
     try {
       const response = await fetch('/api/chat', {
@@ -37,7 +34,7 @@ export default function ChatPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          messages: [...messages, userMessage].map(({ role, content }) => ({ role, content })),
+          messages: currentMessages.map(({ role, content }) => ({ role, content })),
         }),
       });
 
@@ -45,6 +42,7 @@ export default function ChatPage() {
         throw new Error('Failed to get response');
       }
 
+      setStatus('streaming');
       const reader = response.body?.getReader();
       if (!reader) throw new Error('No reader');
 
@@ -74,6 +72,7 @@ export default function ChatPage() {
       }
     } catch (error) {
       console.error('Error:', error);
+      setStatus('error');
       const errorMessage: Message = {
         id: (Date.now() + 2).toString(),
         role: 'assistant',
@@ -81,7 +80,7 @@ export default function ChatPage() {
       };
       setMessages(prev => [...prev, errorMessage]);
     } finally {
-      setIsLoading(false);
+      setStatus('idle');
     }
   };
 
@@ -112,19 +111,16 @@ export default function ChatPage() {
       </Conversation>
 
       <div className="border-t border-border p-4">
-        <form onSubmit={handleSubmit} className="max-w-4xl mx-auto">
-          <PromptInput onSubmit={() => {}}>
+        <div className="max-w-4xl mx-auto">
+          <PromptInput onSubmit={handleSubmit}>
             <PromptInputBody>
               <PromptInputTextarea
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
                 placeholder="Type your message..."
-                disabled={isLoading}
               />
-              <PromptInputSubmit status={isLoading ? "streaming" : undefined} />
+              <PromptInputSubmit status={status === 'streaming' ? 'streaming' : status === 'error' ? 'error' : undefined} />
             </PromptInputBody>
           </PromptInput>
-        </form>
+        </div>
       </div>
     </div>
   );

@@ -2,7 +2,7 @@
 
 import { Conversation, ConversationContent, ConversationEmptyState, ConversationScrollButton } from "@/components/ai-elements/conversation";
 import { Message, MessageContent, MessageResponse } from "@/components/ai-elements/message";
-import { PromptInput, PromptInputBody, PromptInputTextarea, PromptInputSubmit } from "@/components/ai-elements/prompt-input";
+import { PromptInput, PromptInputBody, PromptInputTextarea, PromptInputSubmit, PromptInputProvider } from "@/components/ai-elements/prompt-input";
 import { ConversationTree } from "@/components/conversation-tree";
 import { useState, useEffect } from "react";
 
@@ -34,13 +34,6 @@ export default function ChatPage() {
     loadConversations();
   }, []);
 
-  // Load current conversation tree when conversation changes
-  useEffect(() => {
-    if (currentConversation) {
-      loadConversationTree(currentConversation.id);
-    }
-  }, [currentConversation]);
-
   const loadConversations = async () => {
     try {
       const response = await fetch('/api/conversations');
@@ -48,7 +41,8 @@ export default function ChatPage() {
         const data = await response.json();
         setConversations(data);
         if (data.length > 0 && !currentConversation) {
-          setCurrentConversation(data[0]);
+          // Load the conversation tree for the first conversation
+          await loadConversationTree(data[0].id);
         }
       }
     } catch (error) {
@@ -123,6 +117,7 @@ export default function ChatPage() {
 
       // Send to AI
       const aiResponse = await fetch('/api/chat', {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           messages: contextMessages.map((msg: any) => ({
@@ -258,14 +253,16 @@ export default function ChatPage() {
 
         <div className="border-t border-border p-4">
           <div className="max-w-4xl mx-auto">
-            <PromptInput onSubmit={handleSubmit}>
-              <PromptInputBody>
-                <PromptInputTextarea
-                  placeholder="Type your message..."
-                />
-                <PromptInputSubmit status={status === 'streaming' ? 'streaming' : status === 'error' ? 'error' : undefined} />
-              </PromptInputBody>
-            </PromptInput>
+            <PromptInputProvider>
+              <PromptInput onSubmit={handleSubmit}>
+                <PromptInputBody>
+                  <PromptInputTextarea
+                    placeholder="Type your message..."
+                  />
+                  <PromptInputSubmit status={status === 'streaming' ? 'streaming' : status === 'error' ? 'error' : undefined} />
+                </PromptInputBody>
+              </PromptInput>
+            </PromptInputProvider>
           </div>
         </div>
       </div>

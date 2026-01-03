@@ -9,34 +9,20 @@ export async function GET(
   try {
     const { id: messageId } = await params;
 
-    // Build context by walking up the tree to root and reversing
-    const contextMessages = await prisma.$queryRaw`
-      WITH RECURSIVE message_path AS (
-        SELECT
-          id,
-          parent_message_id,
-          conversation_id,
-          content,
-          role,
-          created_at
-        FROM messages
-        WHERE id = ${messageId}
+    // Build context by walking up the tree to root
+    const contextMessages: any[] = [];
+    let currentId: string | null = messageId;
 
-        UNION ALL
+    while (currentId) {
+      const message: any = await prisma.message.findUnique({
+        where: { id: currentId }
+      });
 
-        SELECT
-          m.id,
-          m.parent_message_id,
-          m.conversation_id,
-          m.content,
-          m.role,
-          m.created_at
-        FROM messages m
-        INNER JOIN message_path mp ON m.id = mp.parent_message_id
-      )
-      SELECT * FROM message_path
-      ORDER BY created_at ASC;
-    `;
+      if (!message) break;
+
+      contextMessages.unshift(message); // Add to beginning to maintain order
+      currentId = message.parentMessageId;
+    }
 
     return NextResponse.json(contextMessages);
   } catch (error) {

@@ -1,7 +1,17 @@
 import { Message } from './generated/prisma'
 import { TreeNode } from './types'
 
+// Simple cache for path calculations
+const pathCache = new Map<string, TreeNode[]>()
+
+export function clearPathCache() {
+  pathCache.clear()
+}
+
 export function buildTree(messages: Message[]): TreeNode | null {
+  // Clear path cache when rebuilding tree
+  clearPathCache()
+  
   const messageMap = new Map<string, Message>()
   const childrenMap = new Map<string | null, Message[]>()
 
@@ -41,6 +51,11 @@ export function findNodeById(tree: TreeNode, id: string): TreeNode | null {
 }
 
 export function getPathToNode(tree: TreeNode, targetId: string): TreeNode[] {
+  // Check cache first
+  if (pathCache.has(targetId)) {
+    return pathCache.get(targetId)!
+  }
+  
   const path: TreeNode[] = []
   
   function traverse(node: TreeNode): boolean {
@@ -54,6 +69,9 @@ export function getPathToNode(tree: TreeNode, targetId: string): TreeNode[] {
   }
   
   traverse(tree)
+  
+  // Cache the result
+  pathCache.set(targetId, [...path])
   return path
 }
 
@@ -72,4 +90,19 @@ export function getDescendants(node: TreeNode): TreeNode[] {
   }
   collect(node)
   return descendants
+}
+
+export function getLeafNodes(tree: TreeNode): TreeNode[] {
+  const leaves: TreeNode[] = []
+  function collect(node: TreeNode) {
+    if (node.children.length === 0) {
+      leaves.push(node)
+    } else {
+      for (const child of node.children) {
+        collect(child)
+      }
+    }
+  }
+  collect(tree)
+  return leaves
 }

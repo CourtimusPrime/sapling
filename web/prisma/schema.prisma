@@ -44,5 +44,6 @@ model Message {
   @@index([parentMessageId], name: "idx_messages_parent")
   @@index([conversationId], name: "idx_messages_conversation")
   @@index([depth], name: "idx_messages_depth")
+  @@index([conversationId, createdAt], name: "idx_messages_conversation_created_at")
   @@map("messages")
 }

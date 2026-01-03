@@ -2,6 +2,27 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { randomUUID } from 'crypto'
 
+export async function GET() {
+  try {
+    const conversations = await prisma.conversation.findMany({
+      select: {
+        id: true,
+        title: true,
+        createdAt: true,
+        _count: {
+          select: { messages: true }
+        }
+      },
+      orderBy: { createdAt: 'desc' },
+    })
+
+    return NextResponse.json(conversations)
+  } catch (error) {
+    console.error('Error fetching conversations:', error)
+    return NextResponse.json({ error: 'Failed to fetch conversations' }, { status: 500 })
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Create conversation

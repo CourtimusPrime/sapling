@@ -7,10 +7,15 @@ export async function GET(
 ) {
   try {
     const conversationId = params.id
+    const { searchParams } = new URL(request.url)
+    const limit = parseInt(searchParams.get('limit') || '50')
+    const offset = parseInt(searchParams.get('offset') || '0')
 
     const messages = await prisma.message.findMany({
       where: { conversationId },
       orderBy: { createdAt: 'asc' },
+      take: limit,
+      skip: offset,
     })
 
     return NextResponse.json(messages)

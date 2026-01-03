@@ -1,5 +1,5 @@
-import { Assistant } from "./assistant";
+import { ComponentExample } from "@/components/component-example";
 
-export default function Home() {
-  return <Assistant />;
+export default function Page() {
+return <ComponentExample />;
 }

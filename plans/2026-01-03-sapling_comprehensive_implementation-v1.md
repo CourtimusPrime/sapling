@@ -7,29 +7,29 @@ Implement the complete Sapling branching conversational AI system as specified i
 ## Implementation Plan
 
 ### Phase 1: Database Foundation & Core Data Model
-- [~] Set up PostgreSQL database connection and migration system
-- [ ] Create conversations table with UUID v7 primary keys and proper indexes
-- [ ] Create messages table with adjacency list structure (id, conversation_id, parent_message_id, role, content, depth, timestamps)
-- [ ] Implement database indexes: idx_messages_parent, idx_messages_conversation, idx_messages_depth
-- [ ] Add database constraints to enforce single-parent rule and referential integrity
-- [ ] Create root system message seeding for new conversations
+- [x] Set up PostgreSQL database connection and migration system
+- [x] Create conversations table with UUID v7 primary keys and proper indexes
+- [x] Create messages table with adjacency list structure (id, conversation_id, parent_message_id, role, content, depth, timestamps)
+- [x] Implement database indexes: idx_messages_parent, idx_messages_conversation, idx_messages_depth
+- [x] Add database constraints to enforce single-parent rule and referential integrity
+- [x] Create root system message seeding for new conversations
 
 ### Phase 2: Backend API Development
-- [ ] Implement POST /api/conversations endpoint for creating new conversation trees
-- [ ] Implement POST /api/messages endpoint for creating user/assistant messages with parent relationships
-- [ ] Implement GET /api/conversations/:id/messages endpoint returning flat message list
-- [ ] Develop context building algorithm that walks from current message to root and reverses the path
-- [ ] Integrate context building with existing chat streaming API
-- [ ] Add validation to prevent message mutation and enforce tree semantics
-- [ ] Implement streaming response flow that creates user message first, then assistant message
+- [x] Implement POST /api/conversations endpoint for creating new conversation trees
+- [x] Implement POST /api/messages endpoint for creating user/assistant messages with parent relationships
+- [x] Implement GET /api/conversations/:id/messages endpoint returning flat message list
+- [x] Develop context building algorithm that walks from current message to root and reverses the path
+- [x] Integrate context building with existing chat streaming API
+- [x] Add validation to prevent message mutation and enforce tree semantics
+- [x] Implement streaming response flow that creates user message first, then assistant message
 
 ### Phase 3: Frontend Tree Data Management
-- [ ] Create TypeScript types for conversation tree data structures
-- [ ] Implement client-side tree reconstruction from flat message arrays
-- [ ] Develop active path tracking and current node state management
-- [ ] Create tree traversal utilities for finding paths, siblings, and descendants
-- [ ] Implement optimistic updates for new message creation and branching
-- [ ] Add error handling for invalid tree operations and network failures
+- [x] Create TypeScript types for conversation tree data structures
+- [x] Implement client-side tree reconstruction from flat message arrays
+- [x] Develop active path tracking and current node state management
+- [x] Create tree traversal utilities for finding paths, siblings, and descendants
+- [x] Implement optimistic updates for new message creation and branching
+- [x] Add error handling for invalid tree operations and network failures
 
 ### Phase 4: Tree Visualization UI Components
 - [ ] Design and implement collapsible tree sidebar component

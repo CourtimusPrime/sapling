@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import { prisma } from '../../../lib/prisma';
 
 // GET /api/messages?conversationId=... - Get all messages for a conversation
 export async function GET(request: NextRequest) {

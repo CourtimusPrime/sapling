@@ -7,6 +7,9 @@ const nextConfig: NextConfig = {
     webpackBuildWorker: true,
   },
 
+  // Add empty turbopack config to silence build warnings
+  turbopack: {},
+
   // Configure webpack for better debugging
   webpack: (config, { dev, isServer }) => {
     // Add source maps for better debugging

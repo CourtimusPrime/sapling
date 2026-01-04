@@ -103,6 +103,7 @@ const TreeNodeComponent = ({
               key={child.message.id}
               node={child}
               activeNodeId={activeNodeId}
+              activePathIds={activePathIds}
               onNodeClick={onNodeClick}
               onContinueFromHere={onContinueFromHere}
               depth={depth + 1}

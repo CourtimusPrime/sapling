@@ -98,7 +98,8 @@ describe('TreeSidebar Component', () => {
 
     expect(screen.getByText('Conversation Tree')).toBeInTheDocument()
     expect(screen.getByText('You: Hello!...')).toBeInTheDocument()
-    expect(screen.getByText('Assistant: Hi there!...')).toBeInTheDocument()
+    // Check that assistant messages are present (they appear in multiple places)
+    expect(screen.getAllByText(/Assistant.*Hi there/)).toHaveLength(2)
   })
 
   it('does not render when tree is null', () => {

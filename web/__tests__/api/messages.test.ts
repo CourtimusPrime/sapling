@@ -141,7 +141,7 @@ describe('Messages API', () => {
         url: 'http://localhost:3000/api/conversations/conv-123/messages?limit=10&offset=0',
       }
 
-      const response = await getConversationMessages(mockRequest as any, { params: { id: conversationId } })
+      const response = await getConversationMessages(mockRequest as any, { params: Promise.resolve({ id: conversationId }) })
       const result = await response.json()
 
       expect(result).toEqual(mockMessages)
@@ -161,7 +161,7 @@ describe('Messages API', () => {
         url: 'http://localhost:3000/api/conversations/conv-123/messages',
       }
 
-      const response = await getConversationMessages(mockRequest as any, { params: { id: conversationId } })
+      const response = await getConversationMessages(mockRequest as any, { params: Promise.resolve({ id: conversationId }) })
 
       expect(mockPrisma.message.findMany).toHaveBeenCalledWith({
         where: { conversationId },
@@ -178,7 +178,7 @@ describe('Messages API', () => {
         url: 'http://localhost:3000/api/conversations/conv-123/messages',
       }
 
-      const response = await getConversationMessages(mockRequest as any, { params: { id: 'conv-123' } })
+      const response = await getConversationMessages(mockRequest as any, { params: Promise.resolve({ id: 'conv-123' }) })
       const result = await response.json()
 
       expect(result.error).toBe('Failed to fetch messages')

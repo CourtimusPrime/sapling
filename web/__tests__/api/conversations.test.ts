@@ -1,7 +1,3 @@
-import { GET as getConversations, POST as createConversation } from '@/app/api/conversations/route'
-import { GET as getConversation, PATCH as updateConversation, DELETE as deleteConversation } from '@/app/api/conversations/[id]/route'
-import { prisma } from '@/lib/prisma'
-
 // Mock NextResponse
 jest.mock('next/server', () => ({
   NextResponse: {
@@ -24,9 +20,15 @@ jest.mock('@/lib/prisma', () => ({
     },
     message: {
       create: jest.fn(),
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
     },
   },
 }))
+
+import { GET as getConversations, POST as createConversation } from '@/app/api/conversations/route'
+import { PATCH as updateConversation, DELETE as deleteConversation } from '@/app/api/conversations/[id]/route'
+import { prisma } from '@/lib/prisma'
 
 const mockPrisma = prisma as jest.Mocked<typeof prisma>
 
@@ -155,7 +157,7 @@ describe('Conversations API', () => {
         json: jest.fn().mockResolvedValue({ title: newTitle }),
       }
 
-      const response = await updateConversation(mockRequest as any, { params: { id: conversationId } })
+      const response = await updateConversation(mockRequest as any, { params: Promise.resolve({ id: conversationId }) })
       const result = await response.json()
 
       expect(result).toEqual(mockUpdatedConversation)
@@ -180,7 +182,7 @@ describe('Conversations API', () => {
         json: jest.fn().mockResolvedValue({ title: 'New Title' }),
       }
 
-      const response = await updateConversation(mockRequest as any, { params: { id: 'conv-123' } })
+      const response = await updateConversation(mockRequest as any, { params: Promise.resolve({ id: 'conv-123' }) })
       const result = await response.json()
 
       expect(result.error).toBe('Failed to update conversation')
@@ -193,7 +195,7 @@ describe('Conversations API', () => {
 
       const mockRequest = {}
 
-      const response = await deleteConversation(mockRequest as any, { params: { id: 'conv-123' } })
+      const response = await deleteConversation(mockRequest as any, { params: Promise.resolve({ id: 'conv-123' }) })
       const result = await response.json()
 
       expect(result.success).toBe(true)
@@ -207,7 +209,7 @@ describe('Conversations API', () => {
 
       const mockRequest = {}
 
-      const response = await deleteConversation(mockRequest as any, { params: { id: 'conv-123' } })
+      const response = await deleteConversation(mockRequest as any, { params: Promise.resolve({ id: 'conv-123' }) })
       const result = await response.json()
 
       expect(result.error).toBe('Failed to delete conversation')

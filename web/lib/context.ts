@@ -6,7 +6,7 @@ export async function buildContext(messageId: string): Promise<Message[]> {
   let currentId: string | null = messageId
 
   while (currentId) {
-    const message = await prisma.message.findUnique({
+    const message: Message | null = await prisma.message.findUnique({
       where: { id: currentId },
     })
 

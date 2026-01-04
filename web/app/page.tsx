@@ -18,6 +18,24 @@ export default function ChatPage() {
   const [status, setStatus] = useState<'idle' | 'streaming' | 'error'>('idle');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  const updateActiveMessages = (currentTree: TreeNode | null, nodeId: string) => {
+    if (!currentTree) return;
+    const path = getPathToNode(currentTree, nodeId);
+    const activeMessages = path.map(node => node.message);
+    setMessages(activeMessages);
+  };
+
+  const handleNodeClick = (nodeId: string) => {
+    setActiveNodeId(nodeId);
+    updateActiveMessages(tree, nodeId);
+  };
+
+  const handleContinueFromHere = (nodeId: string) => {
+    setActiveNodeId(nodeId);
+    updateActiveMessages(tree, nodeId);
+    setIsSidebarOpen(false); // Close sidebar on mobile
+  };
+
   // Load or create conversation on mount
   useEffect(() => {
     const initializeConversation = async () => {
@@ -70,24 +88,6 @@ export default function ChatPage() {
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isSidebarOpen, activeNodeId, handleContinueFromHere]);
-
-  const updateActiveMessages = (currentTree: TreeNode | null, nodeId: string) => {
-    if (!currentTree) return;
-    const path = getPathToNode(currentTree, nodeId);
-    const activeMessages = path.map(node => node.message);
-    setMessages(activeMessages);
-  };
-
-  const handleNodeClick = (nodeId: string) => {
-    setActiveNodeId(nodeId);
-    updateActiveMessages(tree, nodeId);
-  };
-
-  const handleContinueFromHere = (nodeId: string) => {
-    setActiveNodeId(nodeId);
-    updateActiveMessages(tree, nodeId);
-    setIsSidebarOpen(false); // Close sidebar on mobile
-  };
 
   const handleSubmit = async (message: { text: string; files: any[] }) => {
     if (!message.text.trim() || !conversationId || !activeNodeId) return;

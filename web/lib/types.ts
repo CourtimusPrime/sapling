@@ -1,5 +1,7 @@
 import { Message, Conversation } from './generated/prisma'
 
+export type { Message, Conversation }
+
 export interface TreeNode {
   message: Message
   children: TreeNode[]
